@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: fitflow_db
+    environment:
+      POSTGRES_USER: fitflow
+      POSTGRES_PASSWORD: fitflow123
+      POSTGRES_DB: fitflowdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: fitflow_api
+    environment:
+      DATABASE_URL: postgresql://fitflow:fitflow123@db:5432/fitflowdb
+      JWT_SECRET: fitflow_secret_key_2025
+      NODE_ENV: development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    command: npx nodemon src/index.js
+
+  frontend:
+    build: ./frontend
+    container_name: fitflow_web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:5000/api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
