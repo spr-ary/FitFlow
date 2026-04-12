@@ -9,14 +9,12 @@ require('dotenv').config();
 // ─── REGISTER ────────────────────────────────────────────
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  const { name, email, password, role, phone } = req.body;
+  const { name, email, password } = req.body;
+  const role = 'member';
 
   // Validation
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Name, email and password are required.' });
-  }
-  if (!['member', 'trainer', 'admin'].includes(role)) {
-    return res.status(400).json({ message: 'Role must be member, trainer, or admin.' });
   }
 
   try {
@@ -34,10 +32,10 @@ router.post('/register', async (req, res) => {
 
     // Insert user
     const result = await pool.query(
-      `INSERT INTO users (name, email, password, role, phone)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, name, email, role`,
-      [name, email, hashedPassword, role, phone || null]
+      `INSERT INTO users (name, email, password, role)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, name, email, role`,
+      [name, email, hashedPassword, role]
     );
 
     const user = result.rows[0];

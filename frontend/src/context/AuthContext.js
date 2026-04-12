@@ -42,10 +42,13 @@ export function AuthProvider({ children }) {
   };
 
   // REGISTER
-  const register = async (name, email, password, role, phone) => {
+  const register = async (name, email, password) => {
     const response = await api.post('/auth/register', {
-      name, email, password, role, phone
+        name,
+        email,
+        password,
     });
+
     const { token, user } = response.data;
 
     localStorage.setItem('fitflow_token', token);
@@ -53,20 +56,9 @@ export function AuthProvider({ children }) {
     setToken(token);
     setUser(user);
 
-    if (user.role === 'admin')        router.push('/admin');
-    else if (user.role === 'trainer') router.push('/trainer');
-    else                              router.push('/member');
+    router.push('/member');
 
     return user;
-  };
-
-  // LOGOUT
-  const logout = () => {
-    localStorage.removeItem('fitflow_token');
-    localStorage.removeItem('fitflow_user');
-    setToken(null);
-    setUser(null);
-    router.push('/login');
   };
 
   return (
