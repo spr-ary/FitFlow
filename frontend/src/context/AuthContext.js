@@ -61,6 +61,14 @@ export function AuthProvider({ children }) {
     return user;
   };
 
+  const logout = () => {
+    localStorage.removeItem('fitflow_token');
+    localStorage.removeItem('fitflow_user');
+    setToken(null);
+    setUser(null);
+    router.push('/login');
+  };
+
   return (
     <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
       {children}
