@@ -66,13 +66,15 @@ export default function MemberBookPage() {
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
         <div className="mb-2">
-          {/* <p className="text-sm font-medium text-[#c38bb5]">Classes</p> */}
+          <p className="text-sm font-medium text-[#c38bb5]">Classes</p>
           <div className="mt-2 flex items-center gap-4">
             <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
-              Classes
+              Book a Class
             </h1>
-
           </div>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            Browse available sessions, check remaining slots, and reserve classes.
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">

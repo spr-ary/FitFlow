@@ -44,11 +44,15 @@ export default function MyBookingsPage() {
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
         <div className="mb-2">
+          <p className="text-sm font-medium text-[#c38bb5]">Member Area</p>
           <div className="mt-2 flex items-center gap-4">
             <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
               My Bookings
             </h1>
           </div>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            View your upcoming classes, track cancelled bookings, and manage your reservations in one place.
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">

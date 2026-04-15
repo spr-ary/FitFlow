@@ -38,6 +38,7 @@ export default function MembershipPage() {
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
         <div className="mb-2">
+          <p className="text-sm font-medium text-[#c38bb5]">Membership</p>
           <div className="mt-2 flex items-center gap-4">
             <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
               My Membership
