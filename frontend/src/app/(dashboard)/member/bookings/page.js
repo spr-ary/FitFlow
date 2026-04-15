@@ -43,32 +43,26 @@ export default function MyBookingsPage() {
   return (
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
-        <div className="rounded-[28px] border border-[#f1e7f4] bg-gradient-to-r from-[#fff7fb] via-[#f9f5ff] to-[#f5f8ff] p-6 md:p-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#c38bb5]">Member Area</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-                My Bookings
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-gray-500">
-                View your upcoming classes, track cancelled bookings, and manage your reservations in one place.
-              </p>
-            </div>
+        <div className="mb-2">
+          <div className="mt-2 flex items-center gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+              My Bookings
+            </h1>
+          </div>
+        </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-[#f1e7f4]">
-                <div className="text-xs text-gray-400">Upcoming</div>
-                <div className="mt-1 text-xl font-semibold text-gray-800">{upcoming.length}</div>
-              </div>
-              <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-[#f1e7f4]">
-                <div className="text-xs text-gray-400">Cancelled</div>
-                <div className="mt-1 text-xl font-semibold text-gray-800">{cancelled.length}</div>
-              </div>
-              <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-[#f1e7f4] col-span-2 sm:col-span-1">
-                <div className="text-xs text-gray-400">Total</div>
-                <div className="mt-1 text-xl font-semibold text-gray-800">{bookings.length}</div>
-              </div>
-            </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Upcoming</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{upcoming.length}</div>
+          </div>
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Cancelled</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{cancelled.length}</div>
+          </div>
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Total</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{bookings.length}</div>
           </div>
         </div>
 
@@ -109,7 +103,7 @@ export default function MyBookingsPage() {
                       className="flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="mt-1 h-3 w-3 rounded-full bg-gradient-to-br from-pink-300 to-fuchsia-300 shadow-sm" />
+                        <div className="mt-1 h-3 w-3 rounded-full bg-[#d98bb2] shadow-sm" />
                         <div>
                           <h3 className="text-base font-semibold text-gray-800">
                             {b.session_name}

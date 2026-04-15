@@ -52,18 +52,16 @@ export default function Sidebar() {
     .slice(0, 2);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 w-60 bg-[#fdf7fb] border-r border-pink-100 flex flex-col px-4 py-6">
-      {/* Brand */}
+    <aside className="fixed inset-y-0 left-0 z-30 w-60 bg-[#fbf3f8] border-r border-[#f1dce9] flex flex-col px-4 py-6">
       <div className="mb-8 px-2">
-        <div className="text-[30px] leading-none font-serif text-pink-400">
+        <div className="text-[30px] leading-none font-serif text-[#ef62a9]">
           FitFlow
         </div>
-        <div className="text-[10px] uppercase tracking-[0.22em] text-gray-400 mt-2">
+        <div className="text-[10px] uppercase tracking-[0.22em] text-[#97a0b8] mt-2">
           Management
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 space-y-1">
         {nav.map((item) => {
           const Icon = item.icon;
@@ -75,28 +73,27 @@ export default function Sidebar() {
               href={item.href}
               className={`group flex items-center justify-between rounded-full px-4 py-2.5 text-sm transition-all ${
                 active
-                  ? 'bg-pink-200 text-pink-700'
-                  : 'text-gray-600 hover:bg-pink-100'
+                  ? 'bg-[#f4c7de] text-[#c94f8b]'
+                  : 'text-gray-600 hover:bg-[#f9e8f1]'
               }`}
             >
               <span className="flex items-center gap-3">
                 <Icon
                   size={16}
-                  className={active ? 'text-pink-600' : 'text-gray-400'}
+                  className={active ? 'text-[#e54392]' : 'text-gray-400'}
                 />
                 <span>{item.label}</span>
               </span>
 
-              {active && <span className="text-pink-500 text-sm">›</span>}
+              {active && <span className="text-[#e54392] text-sm">›</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* User */}
-      <div className="mt-6 border-t border-pink-100 pt-4">
+      <div className="mt-6 border-t border-[#efd8e6] pt-4">
         <div className="flex items-center gap-3 mb-3 px-2">
-          <div className="h-9 w-9 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center text-xs font-semibold">
+          <div className="h-9 w-9 rounded-full bg-[#f7b7d8] text-[#c63e86] flex items-center justify-center text-xs font-semibold">
             {initials}
           </div>
           <div className="min-w-0">
@@ -111,7 +108,7 @@ export default function Sidebar() {
 
         <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-white border border-pink-100 py-2 text-sm text-gray-500 hover:bg-pink-50 hover:text-pink-500 transition"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-white border border-[#efd8e6] py-2.5 text-sm text-gray-500 hover:bg-[#fff7fb] hover:text-[#d55596] transition"
         >
           <LogOut size={14} />
           Sign out

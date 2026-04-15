@@ -65,33 +65,29 @@ export default function MemberBookPage() {
   return (
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
-        <div className="rounded-[28px] border border-[#f1e7f4] bg-gradient-to-r from-[#fff7fb] via-[#f7f4ff] to-[#eef6ff] p-6 md:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#c38bb5]">Classes</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-                Book a Class
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-gray-500">
-                Browse available sessions, check remaining slots, and reserve classes.
-              </p>
-            </div>
+        <div className="mb-2">
+          {/* <p className="text-sm font-medium text-[#c38bb5]">Classes</p> */}
+          <div className="mt-2 flex items-center gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+              Classes
+            </h1>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-[#f1e7f4]">
-                <div className="text-xs text-gray-400">Sessions</div>
-                <div className="mt-1 text-xl font-semibold text-gray-800">{sessions.length}</div>
-              </div>
-              <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-[#f1e7f4]">
-                <div className="text-xs text-gray-400">Booked</div>
-                <div className="mt-1 text-xl font-semibold text-gray-800">{bookings.length}</div>
-              </div>
-              <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm ring-1 ring-[#f1e7f4] col-span-2 sm:col-span-1">
-                <div className="text-xs text-gray-400">Plan</div>
-                <div className="mt-1 text-sm font-semibold text-gray-800">
-                  {membership?.plan_name || 'No plan'}
-                </div>
-              </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Sessions</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{sessions.length}</div>
+          </div>
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Booked</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{bookings.length}</div>
+          </div>
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Plan</div>
+            <div className="mt-2 text-sm font-semibold text-gray-800">
+              {membership?.plan_name || 'No plan'}
             </div>
           </div>
         </div>
@@ -128,7 +124,7 @@ export default function MemberBookPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="h-10 w-10 rounded-full border-2 border-pink-200 border-t-fuchsia-400 animate-spin" />
+            <div className="h-10 w-10 rounded-full border-2 border-pink-200 border-t-pink-400 animate-spin" />
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -142,7 +138,7 @@ export default function MemberBookPage() {
                   key={s.id}
                   className={`rounded-[28px] border p-5 shadow-sm transition ${
                     isBooked
-                      ? 'border-pink-200 bg-gradient-to-br from-pink-50 to-fuchsia-50'
+                      ? 'border-pink-200 bg-[#fff7fb]'
                       : 'border-[#f1e7f4] bg-white hover:shadow-md hover:border-[#ead8f0]'
                   }`}
                 >
@@ -202,7 +198,7 @@ export default function MemberBookPage() {
                       <button
                         onClick={() => handleBook(s.id)}
                         disabled={booking === s.id}
-                        className="rounded-xl bg-gradient-to-r from-pink-300 via-fuchsia-300 to-indigo-200 px-4 py-2 text-xs font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
+                        className="rounded-xl bg-[#e7a8c8] hover:bg-[#dc94b9] px-4 py-2 text-xs font-semibold text-white transition disabled:opacity-50"
                       >
                         {booking === s.id ? 'Booking...' : 'Book Now'}
                       </button>

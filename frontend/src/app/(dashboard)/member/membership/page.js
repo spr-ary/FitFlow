@@ -37,11 +37,12 @@ export default function MembershipPage() {
   return (
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
-        <div className="rounded-[28px] border border-[#f1e7f4] bg-gradient-to-r from-[#fff7fb] via-[#f9f3ff] to-[#f4f8ff] p-6 md:p-8">
-          <p className="text-sm font-medium text-[#c38bb5]">Membership</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-            My Membership
-          </h1>
+        <div className="mb-2">
+          <div className="mt-2 flex items-center gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+              My Membership
+            </h1>
+          </div>
         </div>
 
         {loading && (
@@ -52,36 +53,36 @@ export default function MembershipPage() {
 
         {!loading && membership && (
           <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[30px] border border-[#efdff2] bg-gradient-to-br from-[#f7d7e8] via-[#e8d9ff] to-[#dbe7ff] p-6 text-gray-800 shadow-sm">
+            <div className="rounded-[30px] border border-[#efdff2] bg-[#f6dfe9] p-6 text-gray-800 shadow-sm">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-white/70">
+                  <p className="text-xs uppercase tracking-[0.24em] text-[#b47a99]">
                     {membership.plan_name}
                   </p>
-                  <h2 className="mt-3 text-3xl font-semibold text-white drop-shadow-sm">
+                  <h2 className="mt-3 text-3xl font-semibold text-gray-800">
                     {membership.member_name || 'Member'}
                   </h2>
-                  <div className="mt-4 inline-flex rounded-full bg-white/30 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                  <div className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-medium text-[#b076a4]">
                     {membership.status}
                   </div>
                 </div>
 
-                <div className="rounded-3xl bg-white/25 px-5 py-4 backdrop-blur-md">
-                  <div className="text-xs text-white/80">Days Remaining</div>
-                  <div className="mt-1 text-3xl font-semibold text-white">{daysLeft}</div>
+                <div className="rounded-3xl bg-white px-5 py-4">
+                  <div className="text-xs text-gray-400">Days Remaining</div>
+                  <div className="mt-1 text-3xl font-semibold text-gray-800">{daysLeft}</div>
                 </div>
               </div>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl bg-white/25 p-4 backdrop-blur-sm">
-                  <div className="text-xs text-white/75">Start Date</div>
-                  <div className="mt-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="text-xs text-gray-400">Start Date</div>
+                  <div className="mt-2 text-sm font-semibold text-gray-800">
                     {new Date(membership.start_date).toLocaleDateString()}
                   </div>
                 </div>
-                <div className="rounded-2xl bg-white/25 p-4 backdrop-blur-sm">
-                  <div className="text-xs text-white/75">Expiry Date</div>
-                  <div className="mt-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="text-xs text-gray-400">Expiry Date</div>
+                  <div className="mt-2 text-sm font-semibold text-gray-800">
                     {new Date(membership.end_date).toLocaleDateString()}
                   </div>
                 </div>

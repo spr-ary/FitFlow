@@ -30,11 +30,12 @@ export default function MemberSchedulePage() {
   return (
     <DashboardLayout allowedRoles={['member']}>
       <div className="space-y-6">
-        <div className="rounded-[28px] border border-[#f1e7f4] bg-gradient-to-r from-[#fff7fb] via-[#f8f5ff] to-[#f4f8ff] p-6 md:p-8">
-          <p className="text-sm font-medium text-[#c38bb5]">Schedule</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-            Class Schedule
-          </h1> 
+        <div className="mb-2">
+          <div className="mt-2 flex items-center gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+              Class Schedule
+            </h1>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -44,7 +45,7 @@ export default function MemberSchedulePage() {
               onClick={() => setFilter(d)}
               className={`rounded-full px-4 py-2 text-xs font-medium capitalize transition ${
                 filter === d
-                  ? 'bg-gradient-to-r from-pink-300 via-fuchsia-300 to-indigo-200 text-white shadow-sm'
+                  ? 'bg-[#f4c7de] text-[#c94f8b]'
                   : 'border border-[#eee3f1] bg-white text-gray-500 hover:bg-[#fcf7fb]'
               }`}
             >
