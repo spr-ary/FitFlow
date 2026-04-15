@@ -1,38 +1,34 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import api from '@/lib/axios';
 
 export default function MemberBookPage() {
-  const [sessions, setSessions]     = useState([]);
-  const [bookings, setBookings]     = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [membership, setMembership] = useState(null);
-  const [loading, setLoading]       = useState(true);
-  const [booking, setBooking]       = useState(null);
-  const [message, setMessage]       = useState('');
+  const [loading, setLoading] = useState(true);
+  const [booking, setBooking] = useState(null);
+  const [message, setMessage] = useState('');
 
   const fetchData = async () => {
     try {
-      // Fetch sessions always
       const sRes = await api.get('/scheduling');
-      setSessions(sRes.data.sessions);
+      setSessions(sRes.data.sessions || []);
 
-      // Fetch bookings — may fail if no membership, that's ok
       try {
         const bRes = await api.get('/booking/my');
-        setBookings(bRes.data.bookings.map(b => b.session_id));
+        setBookings((bRes.data.bookings || []).map((b) => b.session_id));
       } catch {
         setBookings([]);
       }
 
-      // Check membership status
       try {
         const mRes = await api.get('/membership/my');
         setMembership(mRes.data.membership);
       } catch {
         setMembership(null);
       }
-
     } catch (err) {
       console.error(err);
     } finally {
@@ -40,15 +36,19 @@ export default function MemberBookPage() {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleBook = async (sessionId) => {
     if (!membership || membership.status !== 'active') {
       setMessage('You need an active membership to book classes. Please contact the admin.');
       return;
     }
+
     setBooking(sessionId);
     setMessage('');
+
     try {
       const res = await api.post('/booking', { session_id: sessionId });
       setMessage(`Booked successfully! ${res.data.slots_remaining} slots remaining.`);
@@ -60,99 +60,157 @@ export default function MemberBookPage() {
     }
   };
 
+  const activePlan = useMemo(() => membership && membership.status === 'active', [membership]);
+
   return (
     <DashboardLayout allowedRoles={['member']}>
-      <h1 className="text-2xl font-serif text-gray-700 mb-4">Book a Class</h1>
-
-      {/* No membership warning */}
-      {!loading && !membership && (
-        <div className="mb-5 flex items-start gap-3 px-4 py-4 bg-amber-50 border border-amber-200 rounded-xl">
-          <div className="w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <span className="text-white text-xs font-bold">!</span>
+      <div className="space-y-6">
+        <div className="mb-2">
+          <p className="text-sm font-medium text-[#c38bb5]">Classes</p>
+          <div className="mt-2 flex items-center gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+              Book a Class
+            </h1>
           </div>
-          <div>
-            <div className="text-sm font-medium text-amber-800 mb-0.5">No active membership</div>
-            <div className="text-xs text-amber-700">
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            Browse available sessions, check remaining slots, and reserve classes.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Sessions</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{sessions.length}</div>
+          </div>
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Booked</div>
+            <div className="mt-2 text-2xl font-semibold text-gray-800">{bookings.length}</div>
+          </div>
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+            <div className="text-xs text-gray-400">Plan</div>
+            <div className="mt-2 text-sm font-semibold text-gray-800">
+              {membership?.plan_name || 'No plan'}
+            </div>
+          </div>
+        </div>
+
+        {!loading && !membership && (
+          <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
+            <div className="font-medium">No active membership</div>
+            <div className="mt-1 text-xs text-amber-700">
               You can browse classes but cannot book yet. Please contact the gym administrator to assign a membership plan to your account.
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Expired membership warning */}
-      {!loading && membership && membership.status !== 'active' && (
-        <div className="mb-5 flex items-start gap-3 px-4 py-4 bg-red-50 border border-red-200 rounded-xl">
-          <div className="w-5 h-5 rounded-full bg-red-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <span className="text-white text-xs font-bold">!</span>
-          </div>
-          <div>
-            <div className="text-sm font-medium text-red-800 mb-0.5">Membership expired</div>
-            <div className="text-xs text-red-700">
+        {!loading && membership && membership.status !== 'active' && (
+          <div className="rounded-3xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800">
+            <div className="font-medium">Membership expired</div>
+            <div className="mt-1 text-xs text-red-700">
               Your {membership.plan_name} plan expired. Please contact the admin to renew.
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Success/error message */}
-      {message && (
-        <div className={`mb-4 px-4 py-3 rounded-xl text-sm ${
-          message.includes('success') || message.includes('Booked')
-            ? 'bg-green-50 border border-green-200 text-green-700'
-            : 'bg-red-50 border border-red-200 text-red-600'
-        }`}>
-          {message}
-        </div>
-      )}
+        {message && (
+          <div
+            className={`rounded-3xl px-5 py-4 text-sm ${
+              message.includes('success') || message.includes('Booked')
+                ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+                : 'border border-red-200 bg-red-50 text-red-600'
+            }`}
+          >
+            {message}
+          </div>
+        )}
 
-      {loading && (
-        <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 border-2 border-pink-200 border-t-pink-400 rounded-full animate-spin"></div>
-        </div>
-      )}
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="h-10 w-10 rounded-full border-2 border-pink-200 border-t-pink-400 animate-spin" />
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {sessions.map((s) => {
+              const isBooked = bookings.includes(s.id);
+              const isFull = s.booked_count >= s.capacity && !isBooked;
+              const slots = s.capacity - s.booked_count;
 
-      <div className="grid grid-cols-3 gap-4">
-        {sessions.map(s => {
-          const isBooked = bookings.includes(s.id);
-          const isFull   = s.booked_count >= s.capacity && !isBooked;
-          const slots    = s.capacity - s.booked_count;
-          const hasActiveMembership = membership && membership.status === 'active';
+              return (
+                <div
+                  key={s.id}
+                  className={`rounded-[28px] border p-5 shadow-sm transition ${
+                    isBooked
+                      ? 'border-pink-200 bg-[#fff7fb]'
+                      : 'border-[#f1e7f4] bg-white hover:shadow-md hover:border-[#ead8f0]'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-xs text-gray-400">
+                        {new Date(s.session_date).toLocaleDateString()} · {s.start_time}
+                      </div>
+                      <h3 className="mt-2 text-lg font-semibold text-gray-800">{s.name}</h3>
+                      <p className="mt-1 text-sm text-gray-400">
+                        {s.trainer_name} · {s.room}
+                      </p>
+                    </div>
 
-          return (
-            <div key={s.id} className={`bg-white rounded-2xl border p-5 transition ${
-              isBooked ? 'border-pink-300 bg-pink-50' : 'border-pink-100 hover:border-pink-200'
-            }`}>
-              <div className="text-xs text-gray-400 mb-1">
-                {new Date(s.session_date).toLocaleDateString()} · {s.start_time}
-              </div>
-              <div className="text-base font-medium text-gray-700 mb-1">{s.name}</div>
-              <div className="text-xs text-gray-400 mb-4">{s.trainer_name} · {s.room}</div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-400">
-                  {isFull
-                    ? <span className="text-red-500">Full</span>
-                    : isBooked
-                    ? <span className="text-pink-500">Booked</span>
-                    : `${slots} slot${slots !== 1 ? 's' : ''} left`}
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        isBooked
+                          ? 'bg-pink-100 text-pink-600'
+                          : isFull
+                          ? 'bg-red-50 text-red-500'
+                          : 'bg-emerald-50 text-emerald-600'
+                      }`}
+                    >
+                      {isBooked ? 'Booked' : isFull ? 'Full' : `${slots} left`}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+                    <div className="rounded-2xl bg-[#fcf8fd] p-3">
+                      <div className="text-xs text-gray-400">Day</div>
+                      <div className="mt-1 capitalize text-gray-700">{s.day_of_week}</div>
+                    </div>
+                    <div className="rounded-2xl bg-[#fcf8fd] p-3">
+                      <div className="text-xs text-gray-400">Time</div>
+                      <div className="mt-1 text-gray-700">{s.start_time}–{s.end_time}</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between gap-3">
+                    <div className="text-xs text-gray-400">
+                      Capacity {s.booked_count}/{s.capacity}
+                    </div>
+
+                    {isBooked ? (
+                      <span className="rounded-xl bg-pink-100 px-3 py-2 text-xs font-medium text-pink-600">
+                        Booked ✓
+                      </span>
+                    ) : isFull ? (
+                      <span className="rounded-xl bg-gray-100 px-3 py-2 text-xs font-medium text-gray-400">
+                        Full
+                      </span>
+                    ) : !activePlan ? (
+                      <span className="rounded-xl bg-gray-100 px-3 py-2 text-xs font-medium text-gray-400">
+                        No plan
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleBook(s.id)}
+                        disabled={booking === s.id}
+                        className="rounded-xl bg-[#e7a8c8] hover:bg-[#dc94b9] px-4 py-2 text-xs font-semibold text-white transition disabled:opacity-50"
+                      >
+                        {booking === s.id ? 'Booking...' : 'Book Now'}
+                      </button>
+                    )}
+                  </div>
                 </div>
-                {isBooked ? (
-                  <span className="text-xs bg-pink-100 text-pink-500 px-2 py-1 rounded-lg">Booked ✓</span>
-                ) : isFull ? (
-                  <span className="text-xs bg-gray-100 text-gray-400 px-2 py-1 rounded-lg">Full</span>
-                ) : !hasActiveMembership ? (
-                  <span className="text-xs bg-gray-100 text-gray-400 px-2 py-1 rounded-lg cursor-not-allowed">No plan</span>
-                ) : (
-                  <button
-                    onClick={() => handleBook(s.id)}
-                    disabled={booking === s.id}
-                    className="text-xs bg-pink-400 hover:bg-pink-500 text-white px-3 py-1.5 rounded-lg transition disabled:opacity-50">
-                    {booking === s.id ? '...' : 'Book'}
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

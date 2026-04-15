@@ -7,7 +7,7 @@ import api from '@/lib/axios';
 export default function MembershipPage() {
   const [membership, setMembership] = useState(null);
   const [attendance, setAttendance] = useState([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetch = async () => {
@@ -17,7 +17,7 @@ export default function MembershipPage() {
           api.get('/attendance/my'),
         ]);
         setMembership(mRes.data.membership);
-        setAttendance(aRes.data.attendance.slice(0, 5));
+        setAttendance((aRes.data.attendance || []).slice(0, 5));
       } catch (err) {
         console.error(err);
       } finally {
@@ -28,68 +28,132 @@ export default function MembershipPage() {
   }, []);
 
   const daysLeft = membership
-    ? Math.max(0, Math.ceil((new Date(membership.end_date) - new Date()) / (1000 * 60 * 60 * 24)))
+    ? Math.max(
+        0,
+        Math.ceil((new Date(membership.end_date) - new Date()) / (1000 * 60 * 60 * 24))
+      )
     : 0;
 
   return (
     <DashboardLayout allowedRoles={['member']}>
-      <h1 className="text-2xl font-serif text-gray-700 mb-6">My Membership</h1>
-
-      {loading && <p className="text-gray-400 text-sm">Loading...</p>}
-
-      {/* Membership card */}
-      {membership && (
-        <div className="bg-gradient-to-br from-pink-400 to-pink-600 rounded-2xl p-6 text-white mb-6">
-          <div className="text-xs uppercase tracking-widest opacity-75 mb-1">{membership.plan_name}</div>
-          <div className="text-2xl font-serif mb-5">{membership.member_name || 'Member'}</div>
-          <div className="flex justify-between">
-            <div>
-              <div className="text-xs opacity-70">Start Date</div>
-              <div className="text-sm font-medium mt-1">
-                {new Date(membership.start_date).toLocaleDateString()}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs opacity-70">Expires</div>
-              <div className="text-sm font-medium mt-1">
-                {new Date(membership.end_date).toLocaleDateString()}
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-pink-300/50 flex items-center justify-between">
-            <span className={`text-xs px-2 py-1 rounded-full ${membership.status === 'active' ? 'bg-white/20' : 'bg-red-300/30'}`}>
-              {membership.status}
-            </span>
-            <span className="text-xs opacity-75">{daysLeft} days remaining</span>
+      <div className="space-y-6">
+        <div className="mb-2">
+          <p className="text-sm font-medium text-[#c38bb5]">Membership</p>
+          <div className="mt-2 flex items-center gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+              My Membership
+            </h1>
           </div>
         </div>
-      )}
 
-      {!membership && !loading && (
-        <div className="bg-white rounded-2xl border border-pink-100 p-8 text-center text-gray-400 text-sm mb-6">
-          No active membership. Contact admin to get started.
-        </div>
-      )}
-
-      {/* Attendance history */}
-      <div className="bg-white rounded-2xl border border-pink-100">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">Recent Attendance</div>
-        </div>
-        {attendance.length === 0 && (
-          <div className="px-5 py-6 text-sm text-gray-400">No attendance records yet.</div>
+        {loading && (
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-10 text-center text-sm text-gray-400">
+            Loading your membership...
+          </div>
         )}
-        {attendance.map(a => (
-          <div key={a.id} className="flex items-center justify-between px-5 py-3 border-b border-gray-50 last:border-0">
-            <div>
-              <div className="text-sm font-medium text-gray-700">{a.session_name}</div>
-              <div className="text-xs text-gray-400">
-                {new Date(a.session_date).toLocaleDateString()} · {a.trainer_name}
+
+        {!loading && membership && (
+          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-[30px] border border-[#efdff2] bg-[#f6dfe9] p-6 text-gray-800 shadow-sm">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.24em] text-[#b47a99]">
+                    {membership.plan_name}
+                  </p>
+                  <h2 className="mt-3 text-3xl font-semibold text-gray-800">
+                    {membership.member_name || 'Member'}
+                  </h2>
+                  <div className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-medium text-[#b076a4]">
+                    {membership.status}
+                  </div>
+                </div>
+
+                <div className="rounded-3xl bg-white px-5 py-4">
+                  <div className="text-xs text-gray-400">Days Remaining</div>
+                  <div className="mt-1 text-3xl font-semibold text-gray-800">{daysLeft}</div>
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="text-xs text-gray-400">Start Date</div>
+                  <div className="mt-2 text-sm font-semibold text-gray-800">
+                    {new Date(membership.start_date).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-white p-4">
+                  <div className="text-xs text-gray-400">Expiry Date</div>
+                  <div className="mt-2 text-sm font-semibold text-gray-800">
+                    {new Date(membership.end_date).toLocaleDateString()}
+                  </div>
+                </div>
               </div>
             </div>
-            <Badge status={a.status} />
+
+            <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
+              <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+                <div className="text-xs text-gray-400">Plan</div>
+                <div className="mt-2 text-lg font-semibold text-gray-800">
+                  {membership.plan_name}
+                </div>
+              </div>
+              <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+                <div className="text-xs text-gray-400">Status</div>
+                <div className="mt-2">
+                  <Badge status={membership.status} />
+                </div>
+              </div>
+              <div className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
+                <div className="text-xs text-gray-400">Recent Attendance</div>
+                <div className="mt-2 text-lg font-semibold text-gray-800">
+                  {attendance.length}
+                </div>
+              </div>
+            </div>
           </div>
-        ))}
+        )}
+
+        {!membership && !loading && (
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-8 text-center text-sm text-gray-400">
+            No active membership. Contact admin to get started.
+          </div>
+        )}
+
+        <section className="rounded-3xl border border-[#f1e7f4] bg-white shadow-sm overflow-hidden">
+          <div className="border-b border-[#f5eef7] px-6 py-5">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#c7a5bd]">
+              Attendance
+            </p>
+            <h2 className="mt-1 text-lg font-semibold text-gray-800">
+              Recent Attendance
+            </h2>
+          </div>
+
+          {attendance.length === 0 ? (
+            <div className="px-6 py-10 text-sm text-gray-400">
+              No attendance records yet.
+            </div>
+          ) : (
+            <div className="divide-y divide-[#f7f0f8]">
+              {attendance.map((a) => (
+                <div
+                  key={a.id}
+                  className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <div className="text-sm font-semibold text-gray-800">
+                      {a.session_name}
+                    </div>
+                    <div className="mt-1 text-xs text-gray-400">
+                      {new Date(a.session_date).toLocaleDateString()} · {a.trainer_name}
+                    </div>
+                  </div>
+                  <Badge status={a.status} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </DashboardLayout>
   );

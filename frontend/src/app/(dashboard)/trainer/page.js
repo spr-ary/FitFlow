@@ -1,19 +1,29 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 
+function StatCard({ label, value }) {
+  return (
+    <div className="rounded-3xl border border-[#f1e7f4] bg-white px-5 py-5 shadow-sm">
+      <div className="text-xs uppercase tracking-[0.18em] text-gray-400">{label}</div>
+      <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-800">{value}</div>
+    </div>
+  );
+}
+
 export default function TrainerDashboard() {
-  const { user }                  = useAuth();
-  const [sessions, setSessions]   = useState([]);
-  const [loading, setLoading]     = useState(true);
+  const { user } = useAuth();
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const res = await api.get('/scheduling/trainer/my');
-        setSessions(res.data.sessions);
+        setSessions(res.data.sessions || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -23,65 +33,116 @@ export default function TrainerDashboard() {
     fetch();
   }, []);
 
-  const today = sessions.filter(s =>
-    new Date(s.session_date).toDateString() === new Date().toDateString()
+  const today = sessions.filter(
+    (s) => new Date(s.session_date).toDateString() === new Date().toDateString()
   );
+
+  const totalBookings = sessions.reduce((sum, s) => sum + (s.booked_count || 0), 0);
 
   return (
     <DashboardLayout allowedRoles={['trainer']}>
-      <h1 className="text-2xl font-serif text-gray-700 mb-6">My Sessions</h1>
+      <div className="space-y-6">
+        <div>
+          <p className="text-sm font-medium text-[#c08cb6]">Trainer Panel</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
+            My Sessions
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            Welcome back{user?.name ? `, ${user.name}` : ''}. Review your sessions, monitor bookings,
+            and jump to attendance quickly.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-pink-400 to-pink-600 rounded-2xl p-5 text-white">
-          <div className="text-3xl font-medium mb-1">{today.length}</div>
-          <div className="text-xs opacity-75">Classes Today</div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <StatCard label="Classes Today" value={today.length} />
+          <StatCard label="Total Sessions" value={sessions.length} />
+          <StatCard label="Total Bookings" value={totalBookings} />
         </div>
-        <div className="bg-white rounded-2xl border border-pink-100 p-5">
-          <div className="text-3xl font-medium text-gray-700 mb-1">{sessions.length}</div>
-          <div className="text-xs text-gray-400">Total Sessions</div>
-        </div>
-        <div className="bg-white rounded-2xl border border-pink-100 p-5">
-          <div className="text-3xl font-medium text-gray-700 mb-1">
-            {sessions.reduce((sum, s) => sum + (s.booked_count || 0), 0)}
+
+        {loading && (
+          <div className="rounded-3xl border border-[#f1e7f4] bg-white p-10 text-center text-sm text-gray-400">
+            Loading sessions...
           </div>
-          <div className="text-xs text-gray-400">Total Bookings</div>
-        </div>
-      </div>
-
-      {loading && <p className="text-gray-400 text-sm">Loading sessions...</p>}
-
-      <div className="bg-white rounded-2xl border border-pink-100">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">All My Sessions</div>
-        </div>
-        {sessions.length === 0 && !loading && (
-          <div className="px-5 py-6 text-sm text-gray-400">No sessions assigned yet.</div>
         )}
-        {sessions.map(s => {
-          const full = s.booked_count >= s.capacity;
-          return (
-            <div key={s.id} className="flex items-center justify-between px-5 py-4 border-b border-gray-50 last:border-0">
+
+        {!loading && (
+          <section className="rounded-3xl border border-[#f1e7f4] bg-white shadow-sm overflow-hidden">
+            <div className="flex flex-col gap-3 border-b border-[#f6eef8] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <div className="text-sm font-medium text-gray-700">{s.name}</div>
-                <div className="text-xs text-gray-400">
-                  {new Date(s.session_date).toLocaleDateString()} · {s.start_time}–{s.end_time} · {s.room}
-                </div>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#c8a6bf]">
+                  Overview
+                </p>
+                <h2 className="mt-1 text-lg font-semibold text-gray-800">
+                  Assigned Sessions
+                </h2>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className={`text-sm font-medium ${full ? 'text-red-500' : 'text-gray-700'}`}>
-                    {s.booked_count}/{s.capacity}
-                  </div>
-                  <div className="text-xs text-gray-400">booked</div>
-                </div>
-                <a href="/trainer/attendance"
-                  className="text-xs bg-pink-50 text-pink-500 border border-pink-200 px-3 py-1.5 rounded-lg hover:bg-pink-100 transition">
-                  Attendance
-                </a>
-              </div>
+
+              <Link
+                href="/trainer/attendance"
+                className="rounded-xl border border-[#eaddee] bg-[#fcf8fd] px-4 py-2.5 text-sm font-medium text-[#b076a4] transition hover:bg-[#f8effa]"
+              >
+                Open Attendance
+              </Link>
             </div>
-          );
-        })}
+
+            {sessions.length === 0 ? (
+              <div className="px-6 py-10 text-sm text-gray-400">
+                No sessions assigned yet.
+              </div>
+            ) : (
+              <div className="divide-y divide-[#f7f0f8]">
+                {sessions.map((s) => {
+                  const full = s.booked_count >= s.capacity;
+                  const occupancy = s.capacity
+                    ? Math.round((s.booked_count / s.capacity) * 100)
+                    : 0;
+
+                  return (
+                    <div
+                      key={s.id}
+                      className="flex flex-col gap-4 px-6 py-5 xl:flex-row xl:items-center xl:justify-between"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-base font-semibold text-gray-800">{s.name}</h3>
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                              full
+                                ? 'bg-red-50 text-red-500'
+                                : 'bg-[#f7eef9] text-[#b076a4]'
+                            }`}
+                          >
+                            {full ? 'Full' : `${occupancy}% filled`}
+                          </span>
+                        </div>
+
+                        <p className="mt-2 text-sm text-gray-500">
+                          {new Date(s.session_date).toLocaleDateString()} · {s.start_time}–{s.end_time} · {s.room}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="min-w-[120px] rounded-2xl bg-[#fcf8fd] px-4 py-3 text-center">
+                          <div className={`text-sm font-semibold ${full ? 'text-red-500' : 'text-gray-800'}`}>
+                            {s.booked_count}/{s.capacity}
+                          </div>
+                          <div className="mt-1 text-[11px] text-gray-400">Booked</div>
+                        </div>
+
+                        <Link
+                          href="/trainer/attendance"
+                          className="rounded-xl border border-[#eaddee] bg-white px-4 py-3 text-sm font-medium text-[#b076a4] transition hover:bg-[#fcf6fb]"
+                        >
+                          Mark Attendance
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </DashboardLayout>
   );
