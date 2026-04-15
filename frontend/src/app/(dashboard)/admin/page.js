@@ -6,9 +6,9 @@ import api from '@/lib/axios';
 
 function SummaryCard({ label, value, hint, tone = 'pink' }) {
   const tones = {
-    pink: 'bg-[#fcf6fb] border-[#f1e3ef]',
-    purple: 'bg-[#f8f6fd] border-[#e8e1f5]',
-    blue: 'bg-[#f5f9fd] border-[#e1edf6]',
+    pink: 'bg-[#fff8fc] border-[#f2dce8]',
+    purple: 'bg-[#faf7ff] border-[#ebe3f7]',
+    blue: 'bg-[#f7fbff] border-[#e2edf8]',
     neutral: 'bg-white border-[#f1e7f4]',
   };
 
@@ -62,19 +62,15 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout allowedRoles={['admin']}>
       <div className="space-y-6">
-        <section className="rounded-[30px] border border-[#eee3f2] bg-[#fcf8fd] p-6 md:p-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#bf8fb8]">Admin Overview</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-                Dashboard
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-gray-500">
-                Monitor members, sessions, attendance, and gym activity.
-              </p>
-            </div>
-          </div>
-        </section>
+        <div>
+          <p className="text-sm font-medium text-[#bf8fb8]">Admin Overview</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
+            Dashboard
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            Monitor members, sessions, attendance, and overall gym activity.
+          </p>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <SummaryCard
