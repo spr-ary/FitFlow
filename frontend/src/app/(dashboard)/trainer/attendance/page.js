@@ -3,6 +3,26 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import api from '@/lib/axios';
 
+function StatBox({ label, value, tone }) {
+  const styles = {
+    green: 'border-[#e4f2e6] bg-[#f6fbf7] text-green-700 sub-green-600',
+    red: 'border-[#f6e0e0] bg-[#fff7f7] text-red-500 sub-red-400',
+    gray: 'border-[#efe7f3] bg-[#faf8fc] text-gray-500 sub-gray-400',
+  };
+
+  const map = styles[tone] || styles.gray;
+  const parts = map.split(' ');
+  const mainText = parts[2];
+  const subText = parts[3].replace('sub-', '');
+
+  return (
+    <div className={`rounded-2xl border px-4 py-4 text-center shadow-sm ${parts[0]} ${parts[1]}`}>
+      <div className={`text-2xl font-semibold ${mainText}`}>{value}</div>
+      <div className={`mt-1 text-xs ${subText}`}>{label}</div>
+    </div>
+  );
+}
+
 export default function AttendancePage() {
   const [sessions, setSessions] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -81,34 +101,21 @@ export default function AttendancePage() {
   return (
     <DashboardLayout allowedRoles={['trainer']}>
       <div className="space-y-6">
-        <section className="rounded-[28px] border border-[#efe3f3] bg-[#fcf8fd] p-6 md:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#c08cb6]">Attendance</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-                Mark Attendance
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-gray-500">
-                Select a session, review attendees, and update attendance with a cleaner responsive interface.
-              </p>
-            </div>
+        <div>
+          <p className="text-sm font-medium text-[#c08cb6]">Attendance</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
+            Mark Attendance
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            Select a session, review participants, and update attendance records.
+          </p>
+        </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-2xl border border-[#e4f2e6] bg-[#f6fbf7] px-4 py-4 text-center shadow-sm">
-                <div className="text-2xl font-semibold text-green-700">{present}</div>
-                <div className="mt-1 text-xs text-green-600">Present</div>
-              </div>
-              <div className="rounded-2xl border border-[#f6e0e0] bg-[#fff7f7] px-4 py-4 text-center shadow-sm">
-                <div className="text-2xl font-semibold text-red-500">{absent}</div>
-                <div className="mt-1 text-xs text-red-400">Absent</div>
-              </div>
-              <div className="rounded-2xl border border-[#efe7f3] bg-[#faf8fc] px-4 py-4 text-center shadow-sm">
-                <div className="text-2xl font-semibold text-gray-500">{unmarked}</div>
-                <div className="mt-1 text-xs text-gray-400">Unmarked</div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <StatBox label="Present" value={present} tone="green" />
+          <StatBox label="Absent" value={absent} tone="red" />
+          <StatBox label="Unmarked" value={unmarked} tone="gray" />
+        </div>
 
         <section className="rounded-3xl border border-[#f1e7f4] bg-white p-5 shadow-sm">
           <label className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-[#c8a6bf]">
@@ -158,7 +165,7 @@ export default function AttendancePage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-xl border border-[#eaddee] bg-[#fcf8fd] px-4 py-2 text-sm font-medium text-[#b076a4] transition hover:bg-[#f8effa] disabled:opacity-50"
+                className="rounded-xl border border-[#eaddee] bg-[#fcf8fd] px-4 py-2.5 text-sm font-medium text-[#b076a4] transition hover:bg-[#f8effa] disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save Attendance'}
               </button>

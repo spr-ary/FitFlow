@@ -24,12 +24,15 @@ export default function TrainerSchedulePage() {
   return (
     <DashboardLayout allowedRoles={['trainer']}>
       <div className="space-y-6">
-        <section className="rounded-[28px] border border-[#efe3f3] bg-[#fcf8fd] p-6 md:p-8">
+        <div>
           <p className="text-sm font-medium text-[#c08cb6]">Schedule</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
             My Schedule
           </h1>
-        </section>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            View your assigned classes, class timings, rooms, and booking progress.
+          </p>
+        </div>
 
         {loading && (
           <div className="rounded-3xl border border-[#f1e7f4] bg-white p-10 text-center text-sm text-gray-400">

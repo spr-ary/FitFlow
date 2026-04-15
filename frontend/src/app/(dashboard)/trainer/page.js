@@ -5,6 +5,15 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 
+function StatCard({ label, value }) {
+  return (
+    <div className="rounded-3xl border border-[#f1e7f4] bg-white px-5 py-5 shadow-sm">
+      <div className="text-xs uppercase tracking-[0.18em] text-gray-400">{label}</div>
+      <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-800">{value}</div>
+    </div>
+  );
+}
+
 export default function TrainerDashboard() {
   const { user } = useAuth();
   const [sessions, setSessions] = useState([]);
@@ -33,34 +42,22 @@ export default function TrainerDashboard() {
   return (
     <DashboardLayout allowedRoles={['trainer']}>
       <div className="space-y-6">
-        <section className="rounded-[28px] border border-[#efe3f3] bg-[#fcf8fd] p-6 md:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#c08cb6]">Trainer Panel</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
-                My Sessions
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-gray-500">
-                Welcome back{user?.name ? `, ${user.name}` : ''}. Manage your classes, review today’s sessions, and jump straight to attendance.
-              </p>
-            </div>
+        <div>
+          <p className="text-sm font-medium text-[#c08cb6]">Trainer Panel</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-800">
+            My Sessions
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm text-gray-500">
+            Welcome back{user?.name ? `, ${user.name}` : ''}. Review your sessions, monitor bookings,
+            and jump to attendance quickly.
+          </p>
+        </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-[#f1e7f4] bg-white px-4 py-4 shadow-sm">
-                <div className="text-xs text-gray-400">Today</div>
-                <div className="mt-1 text-2xl font-semibold text-gray-800">{today.length}</div>
-              </div>
-              <div className="rounded-2xl border border-[#f1e7f4] bg-white px-4 py-4 shadow-sm">
-                <div className="text-xs text-gray-400">Sessions</div>
-                <div className="mt-1 text-2xl font-semibold text-gray-800">{sessions.length}</div>
-              </div>
-              <div className="rounded-2xl border border-[#f1e7f4] bg-white px-4 py-4 shadow-sm col-span-2 sm:col-span-1">
-                <div className="text-xs text-gray-400">Bookings</div>
-                <div className="mt-1 text-2xl font-semibold text-gray-800">{totalBookings}</div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <StatCard label="Classes Today" value={today.length} />
+          <StatCard label="Total Sessions" value={sessions.length} />
+          <StatCard label="Total Bookings" value={totalBookings} />
+        </div>
 
         {loading && (
           <div className="rounded-3xl border border-[#f1e7f4] bg-white p-10 text-center text-sm text-gray-400">
@@ -70,23 +67,22 @@ export default function TrainerDashboard() {
 
         {!loading && (
           <section className="rounded-3xl border border-[#f1e7f4] bg-white shadow-sm overflow-hidden">
-            <div className="border-b border-[#f6eef8] px-6 py-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#c8a6bf]">
-                    Overview
-                  </p>
-                  <h2 className="mt-1 text-lg font-semibold text-gray-800">
-                    All My Sessions
-                  </h2>
-                </div>
-                <Link
-                  href="/trainer/attendance"
-                  className="rounded-xl border border-[#eaddee] bg-[#fcf8fd] px-4 py-2 text-xs font-medium text-[#c08cb6] transition hover:bg-[#f8effa]"
-                >
-                  Open Attendance
-                </Link>
+            <div className="flex flex-col gap-3 border-b border-[#f6eef8] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#c8a6bf]">
+                  Overview
+                </p>
+                <h2 className="mt-1 text-lg font-semibold text-gray-800">
+                  Assigned Sessions
+                </h2>
               </div>
+
+              <Link
+                href="/trainer/attendance"
+                className="rounded-xl border border-[#eaddee] bg-[#fcf8fd] px-4 py-2.5 text-sm font-medium text-[#b076a4] transition hover:bg-[#f8effa]"
+              >
+                Open Attendance
+              </Link>
             </div>
 
             {sessions.length === 0 ? (
@@ -97,7 +93,9 @@ export default function TrainerDashboard() {
               <div className="divide-y divide-[#f7f0f8]">
                 {sessions.map((s) => {
                   const full = s.booked_count >= s.capacity;
-                  const occupancy = s.capacity ? Math.round((s.booked_count / s.capacity) * 100) : 0;
+                  const occupancy = s.capacity
+                    ? Math.round((s.booked_count / s.capacity) * 100)
+                    : 0;
 
                   return (
                     <div
