@@ -51,7 +51,7 @@ All services share one PostgreSQL database and communicate through a central API
 
 **1. Clone the repo:**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/spr-ary/FitFlow.git
 cd FitFlow
 ```
 
