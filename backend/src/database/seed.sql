@@ -2,7 +2,7 @@
 -- FITFLOW SEED DATA
 -- =============================================
 
--- Password for all demo users = "password123"
+-- Password for all demo users = "password"
 -- (bcrypt hash generated separately, for now plain for seeding)
 
 -- Admin
